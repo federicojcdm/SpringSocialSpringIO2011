@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+        <context:component-scan base-package="com.pt.springsocial.example">
+			<context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+        </context:component-scan>
+        
+		<tx:annotation-driven transaction-manager="txManager"/>
+		
+		<bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    		<property name="entityManagerFactory" ref="emf"/>
+  		</bean>
+
+		
+	    <bean id="emf" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+	        <property name="persistenceUnitName" value="updatestatus"/>
+	    </bean>
+		
+		<!-- Resolves localized messages*.properties and application.properties files in the application to	allow for internationalization. 
+			The messages*.properties files translate Roo generated messages which are part of the admin interface, the application.properties
+			resource bundle localizes all application specific messages such as entity names and menu items. -->
+		<bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource" 
+			  id="messageSource" 
+			  p:basenames="WEB-INF/i18n/messages" 
+			  p:fallbackToSystemLocale="false"/>
+			  
+		<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+			<property name="locations">
+				<list>
+					<value>classpath:config.properties</value>
+				</list>
+			</property>
+	   	</bean> 
+	   	
+	   	<!-- Initialize Facebook Argument Resolver -->
+	   	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+   			<property name="customArgumentResolver" ref="facebookWebArgResolver"/>
+		</bean>
+		
+		<bean id="facebookWebArgResolver" class="org.springframework.social.facebook.FacebookWebArgumentResolver">
+			<constructor-arg name="apiKey" value="${facebook.appId}"/>
+		</bean>
+</beans>        

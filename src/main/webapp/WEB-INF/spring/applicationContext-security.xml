@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+	<http use-expressions="true">
+        <intercept-url pattern="/status" access="isAuthenticated()"/>
+        <intercept-url pattern="/**" access="permitAll" />
+        <form-login login-page="/login.jsp" default-target-url="/status"/>
+        <logout />
+        <remember-me />
+    </http>
+    
+    <beans:bean id="org.springframework.security.authenticationManager" class="org.springframework.security.authentication.ProviderManager">
+    	<beans:property name="providers">
+    		<beans:list>
+      			<beans:ref local="taskOnAuthenticationProvider"/>
+			</beans:list>
+		</beans:property>    	
+    </beans:bean>
+    
+    <beans:bean id="taskOnAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+  		<beans:property name="userDetailsService" ref="userService"/>
+  		<!-- property name="passwordEncoder" ref="passwordEncoder"/ -->
+	</beans:bean>
+</beans:beans>        
